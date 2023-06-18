@@ -1,10 +1,6 @@
 ﻿using Core.Entities;
-using Infrastructure.Data;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace API.Controllers
 {
@@ -12,42 +8,39 @@ namespace API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly StoreContext _context;
+        private readonly IProductRepository _repo;
 
-        public ProductsController(StoreContext context)
+        public ProductsController(IProductRepository repository)
         {
-            _context=context;
+           _repo=repository;
         }
-        // GET: api/<ProductsController>
+
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts()
+        public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts()
         {
-            return await _context.Products.ToListAsync();
+            var products = await _repo.GetProducts();
+            return Ok(products);
         }
-
-        // GET api/<ProductsController>/5
+       
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            return await _context.Products.FindAsync(id);
+            var product= await _repo.GetProductById(id);
+            return Ok(product);
         }
 
-        // POST api/<ProductsController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpGet("brands")]
+        public async Task<ActionResult<IReadOnlyList<Product>>> GetProductBrands()
         {
+            var brands = await _repo.GetProductsBrands();
+            return Ok(brands);
         }
 
-        // PUT api/<ProductsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpGet("types")]
+        public async Task<ActionResult<IReadOnlyList<Product>>> GetProductTypes()
         {
-        }
-
-        // DELETE api/<ProductsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var types = await _repo.GetProductsTypes();
+            return Ok(types);
         }
     }
 }
