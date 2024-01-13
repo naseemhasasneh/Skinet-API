@@ -1,5 +1,6 @@
 ﻿using API.Errors;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SQLitePCL;
@@ -15,6 +16,7 @@ namespace API.Controllers
            _context=storeContext;
         }
         [HttpGet("notfound")]
+
         public ActionResult GetNotFoundRequest()
         {
             var thing = _context.Products.Find(42);
@@ -24,6 +26,14 @@ namespace API.Controllers
             }
             return Ok();
         }
+        [HttpGet("testauth")]
+        [Authorize]
+
+        public ActionResult<string> GetSecretText()
+        {
+            return Ok("secret stuff");
+        }
+
 
         [HttpGet("servererror")]
         public ActionResult GetServerError()
